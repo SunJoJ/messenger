@@ -13,16 +13,26 @@ users = {
     "Nick": "12345",
 }
 
+
 @app.route("/")
 def hello():
     return "Hello, World!"
 
+
 @app.route("/status")
 def status():
-    return {'status': True, 'time': datetime.now()}
+    return {'status': True,
+            'time': datetime.now(),
+            'messages_count': len(messages),
+            'users_count': len(users)}
+
 
 @app.route("/messages")
 def messages_view():
+    """
+    :input: ?after=float
+    :return: [{'username': str, 'time': float, 'text': str}, ...]
+    """
     print(request.args)
     after = float(request.args['after'])
     filtered_messages = []
@@ -30,6 +40,7 @@ def messages_view():
         if message['time'] > after:
             filtered_messages.append(message)
     return {'messages': filtered_messages}
+
 
 @app.route("/send", methods=['POST'])
 def send_view():
@@ -49,6 +60,7 @@ def send_view():
     messages.append({'username': username, 'time': time.time(), 'text': text})
     return {'ok': True}
 
+
 @app.route("/login", methods=['POST'])
 def login_view():
     """
@@ -67,6 +79,7 @@ def login_view():
         return {'ok': True}
     else:
         return {'ok': False}
+
 
 if __name__ == '__main__':
     app.run()
